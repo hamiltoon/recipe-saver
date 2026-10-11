@@ -10,6 +10,7 @@ A full-stack recipe management application with Chrome extension, React web app,
 
 - **Web App**: React + Vite + Radix UI (`web/`)
 - **Chrome Extension**: Popup + Content Script (`plugin/`)
+- **MCP Server**: Save and read recipes from Claude (`api/src/mcp.js`)
 - **Backend**: Cloudflare Workers + GraphQL Yoga + D1 (`api/`)
 - **Database**: Cloudflare D1 (SQLite-compatible, edge-deployed)
 - **Auth**: GitHub OAuth
@@ -25,6 +26,7 @@ A full-stack recipe management application with Chrome extension, React web app,
 - Modern React UI with black and white theme
 - GraphQL API for all operations with type safety
 - Chrome extension for easy recipe extraction
+- MCP server so Claude can save, search and read recipes from a chat
 
 ## Project Structure
 
@@ -41,6 +43,7 @@ A full-stack recipe management application with Chrome extension, React web app,
 ├── api/                     # Cloudflare Workers API
 │   ├── src/
 │   │   ├── index.js         # Worker entry point
+│   │   ├── mcp.js           # MCP server for Claude
 │   │   ├── resolvers.js     # GraphQL resolvers (D1)
 │   │   ├── schema.js        # Schema builder
 │   │   └── schema.graphql   # GraphQL schema
@@ -48,6 +51,7 @@ A full-stack recipe management application with Chrome extension, React web app,
 │   ├── wrangler.toml        # Cloudflare configuration
 │   ├── package.json         # Dependencies
 │   ├── README.md            # Deployment guide
+│   ├── MCP.md               # Connecting Claude via MCP
 │   └── MIGRATION.md         # Migration notes
 ├── plugin/                  # Chrome extension
 │   ├── manifest.json        # Extension manifest
@@ -119,6 +123,13 @@ The web app automatically deploys to GitHub Pages on push to main:
 3. Click "Load unpacked"
 4. Select the `plugin` directory
 5. The extension should now appear in your extensions list
+
+### 6. Connect Claude (MCP)
+
+Set an `MCP_TOKEN` secret on the Worker and add
+`https://recipe-saver-api.hamiltoon.workers.dev/mcp/<MCP_TOKEN>` as a custom connector in Claude.
+Then just ask Claude to "save this recipe" or "read my pancake recipe".
+See [api/MCP.md](api/MCP.md) for details.
 
 ## GraphQL API
 

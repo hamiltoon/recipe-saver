@@ -3,6 +3,7 @@ import { createYoga } from 'graphql-yoga';
 import { createSchema } from './schema.js';
 import { createResolvers } from './resolvers.js';
 import { createAuthResolvers } from './auth-resolvers.js';
+import { isMcpPath, handleMcpRequest } from './mcp.js';
 
 // Merge resolvers helper
 function mergeResolvers(...resolverObjects) {
@@ -20,6 +21,11 @@ function mergeResolvers(...resolverObjects) {
 
 export default {
   async fetch(request, env, ctx) {
+    // MCP endpoint for Claude (save/read recipes from a chat)
+    if (isMcpPath(new URL(request.url).pathname)) {
+      return handleMcpRequest(request, env);
+    }
+
     // Merge recipe and auth resolvers
     const resolvers = mergeResolvers(
       createResolvers(env.DB, env),
